@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yash Editz | Admin Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#000000',
+                        secondary: '#111111',
+                        accent: '#ff0000',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #000; color: #fff; font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        .card { transition: all 0.3s ease; border: 1px solid #222; position: relative; }
+        .card:hover { transform: translateY(-5px); border-color: #ff0000; }
+        .logo-img { border-radius: 50%; border: 2px solid #fff; }
+    </style>
+</head>
+<body class="bg-primary text-white">
+
+    <nav class="bg-black/90 backdrop-blur-md sticky top-0 z-50 border-b border-red-900/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <div class="flex items-center gap-3">
+                    <img src="https://i.ibb.co/6R2M3Nf/361.jpg" alt="Logo" class="h-12 w-12 logo-img">
+                    <h1 class="text-xl font-bold tracking-widest uppercase">YASH <span class="text-accent">EDITZ</span></h1>
+                </div>
+                <div class="flex space-x-6 items-center">
+                    <a href="https://www.instagram.com/yasheditz092" target="_blank" class="text-accent font-bold text-sm">INSTAGRAM</a>
+                    <button onclick="checkAdmin()" id="admin-btn" class="bg-white text-black px-4 py-1.5 rounded text-[10px] font-black uppercase transition-colors">Admin Login</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section id="portfolio" class="py-12 px-4">
+        <div class="max-w-7xl mx-auto">
+            <div class="space-y-16">
+                <div id="birthday-sec">
+                    <h3 class="text-xl font-bold mb-8 flex items-center gap-3 text-gray-400 uppercase tracking-widest"><span class="w-1 h-6 bg-accent"></span> Birthday Edits</h3>
+                    <div id="birthday-cards" class="grid grid-cols-1 md:grid-cols-3 gap-8"></div>
+                </div>
+
+                <div id="marriage-sec">
+                    <h3 class="text-xl font-bold mb-8 flex items-center gap-3 text-gray-400 uppercase tracking-widest"><span class="w-1 h-6 bg-accent"></span> Marriage Edits</h3>
+                    <div id="marriage-cards" class="grid grid-cols-1 md:grid-cols-3 gap-8"></div>
+                </div>
+
+                <div id="trending-sec">
+                    <h3 class="text-xl font-bold mb-8 flex items-center gap-3 text-gray-400 uppercase tracking-widest"><span class="w-1 h-6 bg-accent"></span> Trending / Viral</h3>
+                    <div id="trending-cards" class="grid grid-cols-1 md:grid-cols-3 gap-8"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="admin-modal" class="fixed inset-0 bg-black/95 hidden z-[100] flex items-center justify-center p-4">
+        <div class="bg-secondary p-8 rounded-lg w-full max-w-md border border-red-600 shadow-[0_0_20px_rgba(255,0,0,0.2)]">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-accent italic uppercase tracking-tighter">New Project</h2>
+                <button onclick="toggleModal()" class="text-3xl text-gray-500 hover:text-white">&times;</button>
+            </div>
+            <form id="admin-form" class="space-y-4">
+                <input type="text" id="v-title" placeholder="Video Title" class="w-full p-3 rounded bg-black border border-gray-800 outline-none focus:border-accent" required>
+                <input type="url" id="v-link" placeholder="YouTube Demo Link" class="w-full p-3 rounded bg-black border border-gray-800 outline-none focus:border-accent" required>
+                <input type="text" id="v-price" placeholder="Price (e.g. ₹399)" class="w-full p-3 rounded bg-black border border-gray-800 outline-none focus:border-accent" required>
+                <select id="v-cat" class="w-full p-3 rounded bg-black border border-gray-800 outline-none">
+                    <option value="birthday">Birthday</option>
+                    <option value="marriage">Marriage</option>
+                    <option value="trending">Trending</option>
+                </select>
+                <button type="submit" class="w-full bg-accent text-white font-black py-4 rounded uppercase tracking-widest hover:bg-red-700 transition">Publish Now</button>
+            </form>
+        </div>
+    </section>
+
+    <script>
+        let isAdmin = false;
+        const ADMIN_PASSWORD = "myloveammu092"; // Aapka naya password yahan hai
+        let projects = JSON.parse(localStorage.getItem('yashProjects')) || [];
+
+        function checkAdmin() {
+            if (!isAdmin) {
+                const pass = prompt("Enter Admin Password:");
+                if (pass === ADMIN_PASSWORD) {
+                    isAdmin = true;
+                    const btn = document.getElementById('admin-btn');
+                    btn.innerText = "Add New Video";
+                    btn.classList.replace('bg-white', 'bg-red-600');
+                    btn.classList.add('text-white');
+                    renderProjects();
+                } else if (pass !== null) {
+                    alert("Wrong Password! Access Denied.");
+                }
+            } else {
+                toggleModal();
+            }
+        }
+
+        function toggleModal() {
+            document.getElementById('admin-modal').classList.toggle('hidden');
+        }
+
+        function renderProjects() {
+            ['birthday', 'marriage', 'trending'].forEach(cat => {
+                document.getElementById(`${cat}-cards`).innerHTML = '';
+            });
+
+            projects.forEach((p, index) => {
+                const card = document.createElement('div');
+                card.className = 'bg-secondary rounded-lg overflow-hidden card';
+                
+                let thumb = "https://via.placeholder.com/400x225/111/ff0000?text=Yash+Editz";
+                if(p.link.includes('youtube.com/watch?v=')) {
+                    const id = p.link.split('v=')[1].split('&')[0];
+                    thumb = `https://img.youtube.com/vi/${id}/mqdefault.jpg`;
+                }
+
+                card.innerHTML = `
+                    <img src="${thumb}" class="w-full aspect-video object-cover">
+                    <div class="p-5">
+                        <h4 class="text-lg font-bold uppercase mb-1 tracking-tight">${p.title}</h4>
+                        <p class="text-accent font-black text-xl mb-4">${p.price}</p>
+                        <div class="flex gap-2">
+                            <a href="${p.link}" target="_blank" class="flex-1 text-center border border-gray-700 py-2 text-[10px] font-bold hover:bg-white hover:text-black transition">PREVIEW</a>
+                            <a href="https://wa.me/910000000000?text=Hi Yash, I want to book: ${p.title}" target="_blank" class="flex-1 text-center bg-green-600 py-2 text-[10px] font-bold hover:bg-green-700 transition">WHATSAPP</a>
+                        </div>
+                        ${isAdmin ? `<button onclick="deleteProject(${index})" class="mt-4 text-red-500 text-[10px] uppercase font-bold opacity-50 hover:opacity-100 transition">Remove Post</button>` : ''}
+                    </div>
+                `;
+                document.getElementById(`${p.category}-cards`).appendChild(card);
+            });
+        }
+
+        document.getElementById('admin-form').onsubmit = (e) => {
+            e.preventDefault();
+            const newProject = {
+                title: document.getElementById('v-title').value,
+                link: document.getElementById('v-link').value,
+                price: document.getElementById('v-price').value,
+                category: document.getElementById('v-cat').value
+            };
+            projects.push(newProject);
+            localStorage.setItem('yashProjects', JSON.stringify(projects));
+            renderProjects();
+            toggleModal();
+            document.getElementById('admin-form').reset();
+        };
+
+        function deleteProject(index) {
+            if(confirm('Delete this video from your portfolio?')) {
+                projects.splice(index, 1);
+                localStorage.setItem('yashProjects', JSON.stringify(projects));
+                renderProjects();
+            }
+        }
+
+        renderProjects();
+    </script>
+</body>
+</html>
